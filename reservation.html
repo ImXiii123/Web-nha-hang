@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt bàn - Nhà Hàng Đình Quý</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f0e8;
+            color: #2c2c2c;
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== HEADER ===== */
+        .site-header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #8b0000;
+            font-family: Georgia, serif;
+        }
+        .logo span { color: #c9a961; }
+        .nav-links { display: flex; gap: 25px; }
+        .nav-links a { color: #2c2c2c; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: #c9a961; }
+        .btn-login {
+            padding: 10px 22px;
+            border: 2px solid #c9a961;
+            color: #c9a961;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .btn-login:hover { background: #c9a961; color: #fff; }
+
+        /* ===== HERO ===== */
+        .reservation-hero {
+            background: linear-gradient(rgba(139,0,0,0.7), rgba(139,0,0,0.7)),
+                        url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200') center/cover;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+        }
+        .reservation-hero h1 {
+            font-size: 42px;
+            font-family: Georgia, serif;
+            margin-bottom: 10px;
+        }
+        .reservation-hero p { font-size: 18px; font-style: italic; }
+
+        /* ===== FORM CONTAINER ===== */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .form-container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .form-container h2 {
+            text-align: center;
+            color: #8b0000;
+            font-family: Georgia, serif;
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c2c2c;
+            font-size: 14px;
+        }
+        .form-group label .required { color: #dc3545; }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0d5c5;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #c9a961;
+        }
+        .form-control.error {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        .form-control.success {
+            border-color: #28a745;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error-message.show { display: block; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #c9a961;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background: #b8944f; }
+
+        /* ===== SUCCESS MODAL ===== */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .success-overlay.show { display: flex; }
+        .success-modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+        .success-modal h3 {
+            color: #28a745;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .success-modal p {
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .success-modal .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 14px;
+        }
+        .success-modal .detail-row .label { color: #666; }
+        .success-modal .detail-row .value { font-weight: 600; color: #2c2c2c; }
+        .btn-close-modal {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #c9a961;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-close-modal:hover { background: #b8944f; }
+
+        /* ===== FOOTER ===== */
+        .site-footer {
+            background: #2c2420;
+            color: #d4c5b0;
+            padding: 30px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .reservation-hero h1 { font-size: 28px; }
+            .form-container { padding: 25px; margin: 20px; }
+            .header-inner { flex-direction: column; gap: 10px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">Đình <span>Quý</span></a>
+            <nav class="nav-links">
+                <a href="index.html">Trang Chủ</a>
+                <a href="menu.html">Thực Đơn</a>
+                <a href="reservation.html" style="color:#c9a961; font-weight:600;">Đặt Bàn</a>
+                <a href="cart.html">Giỏ Hàng</a>
+            </nav>
+            <a href="login.html" class="btn-login">Đăng Nhập</a>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="reservation-hero">
+        <div>
+            <h1>Đặt Bàn Trực Tuyến</h1>
+            <p>Đảm bảo có chỗ ngồi cho bữa tiệc của bạn</p>
+        </div>
+    </section>
+
+    <!-- FORM -->
+    <div class="container">
+        <div class="form-container">
+            <h2>Thông Tin Đặt Bàn</h2>
+            
+            <!-- ️ QUAN TRỌNG: Không dùng method POST, dùng onsubmit trả về false -->
+            <form id="reservation-form" onsubmit="return false;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Họ và tên <span class="required">*</span></label>
+                        <input type="text" id="res-name" class="form-control" placeholder="Nguyễn Văn A" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại <span class="required">*</span></label>
+                        <input type="tel" id="res-phone" class="form-control" placeholder="0901234567" required>
+                        <div class="error-message" id="phone-error">⚠️ Vui lòng nhập đúng số điện thoại (10-11 chữ số)</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="res-email" class="form-control" placeholder="email@example.com">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ngày đặt <span class="required">*</span></label>
+                        <input type="date" id="res-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Giờ đặt <span class="required">*</span></label>
+                        <input type="time" id="res-time" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Số người <span class="required">*</span></label>
+                    <select id="res-guests" class="form-control" required>
+                        <option value="">-- Chọn số người --</option>
+                        <option value="1-2">1 - 2 người</option>
+                        <option value="3-4">3 - 4 người</option>
+                        <option value="5-6">5 - 6 người</option>
+                        <option value="7-10">7 - 10 người</option>
+                        <option value="10+">Trên 10 người (Phòng VIP)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Loại bàn</label>
+                    <select id="res-table-type" class="form-control">
+                        <option value="normal">Bàn thường</option>
+                        <option value="vip">Bàn VIP</option>
+                        <option value="private">Phòng riêng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Yêu cầu đặc biệt</label>
+                    <textarea id="res-notes" class="form-control" rows="3" placeholder="Dị ứng thực phẩm, trang trí sinh nhật..."></textarea>
+                </div>
+
+                <button type="button" id="btn-submit" class="btn-submit">Xác Nhận Đặt Bàn</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div class="success-overlay" id="success-overlay">
+        <div class="success-modal">
+            <div class="success-icon">✅</div>
+            <h3>Đặt Bàn Thành Công!</h3>
+            <p style="color:#666; margin-bottom:20px;">Chúng tôi đã nhận được yêu cầu của bạn.</p>
+            <div id="booking-details"></div>
+            <button class="btn-close-modal" id="btn-close-modal">Đóng</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; 2026 Nhà hàng Đình Quý. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('reservation-form');
+            const btnSubmit = document.getElementById('btn-submit');
+            const phoneInput = document.getElementById('res-phone');
+            const phoneError = document.getElementById('phone-error');
+            const successOverlay = document.getElementById('success-overlay');
+            const btnCloseModal = document.getElementById('btn-close-modal');
+            const bookingDetails = document.getElementById('booking-details');
+
+            // ===== VALIDATE SĐT REALTIME =====
+            phoneInput.addEventListener('input', function() {
+                const phoneRegex = /^[0-9]{10,11}$/;
+                if (this.value && !phoneRegex.test(this.value)) {
+                    this.classList.add('error');
+                    this.classList.remove('success');
+                    phoneError.classList.add('show');
+                } else if (this.value && phoneRegex.test(this.value)) {
+                    this.classList.remove('error');
+                    this.classList.add('success');
+                    phoneError.classList.remove('show');
+                } else {
+                    this.classList.remove('error', 'success');
+                    phoneError.classList.remove('show');
+                }
+            });
+
+            // ===== XỬ LÝ SUBMIT (KHÔNG GỬI THẬT) =====
+            btnSubmit.addEventListener('click', function(e) {
+                e.preventDefault(); // Chặn submit thật
+
+                // Validate tất cả trường required
+                const name = document.getElementById('res-name').value.trim();
+                const phone = phoneInput.value.trim();
+                const date = document.getElementById('res-date').value;
+                const time = document.getElementById('res-time').value;
+                const guests = document.getElementById('res-guests').value;
+                const email = document.getElementById('res-email').value.trim();
+                const tableType = document.getElementById('res-table-type').value;
+                const notes = document.getElementById('res-notes').value.trim();
+
+                // Check required
+                if (!name) {
+                    alert('⚠️ Vui lòng nhập họ và tên!');
+                    document.getElementById('res-name').focus();
+                    return;
+                }
+
+                const phoneRegex = /^[0-9]{10,11}$/;
+                if (!phone || !phoneRegex.test(phone)) {
+                    phoneInput.classList.add('error');
+                    phoneError.classList.add('show');
+                    phoneInput.focus();
+                    return;
+                }
+
+                if (!date) {
+                    alert('⚠️ Vui lòng chọn ngày đặt!');
+                    document.getElementById('res-date').focus();
+                    return;
+                }
+
+                if (!time) {
+                    alert('⚠️ Vui lòng chọn giờ đặt!');
+                    document.getElementById('res-time').focus();
+                    return;
+                }
+
+                if (!guests) {
+                    alert('⚠️ Vui lòng chọn số người!');
+                    document.getElementById('res-guests').focus();
+                    return;
+                }
+
+                // Format ngày hiển thị
+                const dateObj = new Date(date);
+                const dateFormatted = String(dateObj.getDate()).padStart(2,'0') + '/' + 
+                                      String(dateObj.getMonth()+1).padStart(2,'0') + '/' + 
+                                      dateObj.getFullYear();
+
+                // Map loại bàn
+                const tableTypeMap = {
+                    'normal': 'Bàn thường',
+                    'vip': 'Bàn VIP',
+                    'private': 'Phòng riêng'
+                };
+
+                // Tạo mã đặt bàn ngẫu nhiên
+                const bookingCode = 'BK' + Date.now().toString().slice(-6);
+
+                // Lưu vào localStorage (để admin xem sau này)
+                const reservations = JSON.parse(localStorage.getItem('reservations') || '[]');
+                reservations.push({
+                    code: bookingCode,
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    date: dateFormatted,
+                    time: time,
+                    guests: guests,
+                    tableType: tableTypeMap[tableType],
+                    notes: notes,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                });
+                localStorage.setItem('reservations', JSON.stringify(reservations));
+
+                // Hiện modal thành công
+                bookingDetails.innerHTML = `
+                    <div class="detail-row">
+                        <span class="label">Mã đặt bàn:</span>
+                        <span class="value" style="color:#c9a961; font-size:16px;">${bookingCode}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Khách hàng:</span>
+                        <span class="value">${name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Số điện thoại:</span>
+                        <span class="value">${phone}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Ngày đặt:</span>
+                        <span class="value">${dateFormatted}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Giờ đặt:</span>
+                        <span class="value">${time}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Số người:</span>
+                        <span class="value">${guests} người</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Loại bàn:</span>
+                        <span class="value">${tableTypeMap[tableType]}</span>
+                    </div>
+                    ${notes ? `<div class="detail-row"><span class="label">Ghi chú:</span><span class="value">${notes}</span></div>` : ''}
+                `;
+
+                successOverlay.classList.add('show');
+
+                // Reset form
+                form.reset();
+                phoneInput.classList.remove('error', 'success');
+                phoneError.classList.remove('show');
+
+                console.log('✅ Đặt bàn thành công:', bookingCode);
+            });
+
+            // Đóng modal
+            btnCloseModal.addEventListener('click', function() {
+                successOverlay.classList.remove('show');
+            });
+
+            successOverlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+
+            // Set min date = hôm nay
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('res-date').setAttribute('min', today);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Nhà Hàng Đình Quý</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: var(--secondary-color);
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: var(--gray);
+        }
+        
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .role-card {
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .role-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .role-card.active {
+            border-color: var(--primary-color);
+            background: #fff9e6;
+        }
+        
+        .role-card .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .role-card h3 {
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .role-card p {
+            color: var(--gray);
+            font-size: 13px;
+        }
+        
+        .login-form-section {
+            display: none;
+        }
+        
+        .login-form-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>Đình <span style="color: var(--primary-color);">Quý</span></h1>
+                <p>Đăng nhập để tiếp tục</p>
+            </div>
+
+            <!-- Chọn vai trò -->
+            <div class="role-selector">
+                <div class="role-card active" data-role="customer" onclick="selectRole('customer')">
+                    <div class="icon">👤</div>
+                    <h3>Khách Hàng</h3>
+                    <p>Đặt bàn, gọi món, tích điểm</p>
+                </div>
+                <div class="role-card" data-role="staff" onclick="selectRole('staff')">
+                    <div class="icon">👔</div>
+                    <h3>Nhân Viên</h3>
+                    <p>Quản lý nhà hàng</p>
+                </div>
+            </div>
+
+            <!-- Form Khách Hàng -->
+            <div id="customer-form" class="login-form-section active">
+                <form action="index.html" method="GET">
+                    <div class="form-group">
+                        <label for="customer-email">Email hoặc Số điện thoại</label>
+                        <input type="text" id="customer-email" class="form-control" placeholder="Nhập email hoặc SĐT" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-password">Mật khẩu</label>
+                        <input type="password" id="customer-password" class="form-control" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox"> Ghi nhớ đăng nhập
+                        </label>
+                        <a href="#" style="color: var(--primary-color); text-decoration: none;">Quên mật khẩu?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">Đăng Nhập Khách Hàng</button>
+                </form>
+                <p style="text-align: center; margin-top: 20px; color: var(--gray);">
+                    Chưa có tài khoản? <a href="register.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Đăng ký ngay</a>
+                </p>
+            </div>
+
+            <!-- Form Nhân Viên -->
+            <div id="staff-form" class="login-form-section">
+                <form action="admin/dashboard.html" method="GET">
+                    <div class="form-group">
+                        <label for="staff-username">Mã nhân viên / Username</label>
+                        <input type="text" id="staff-username" class="form-control" placeholder="VD: NV001 hoặc admin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staff-password">Mật khẩu hệ thống</label>
+                        <input type="password" id="staff-password" class="form-control" placeholder="Nhập mật khẩu" required>
+                    </div>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--warning);">
+                        <p style="margin: 0; color: #856404; font-size: 14px;">
+                            ️ Chỉ dành cho nhân viên và quản lý nhà hàng. Truy cập trái phép sẽ bị xử lý.
+                        </p>
+                    </div>
+                    <button type="submit" class="btn btn-secondary" style="width: 100%; padding: 15px;">Đăng Nhập Hệ Thống</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            // Xóa active khỏi tất cả role cards
+            document.querySelectorAll('.role-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Xóa active khỏi tất cả forms
+            document.querySelectorAll('.login-form-section').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            // Thêm active vào role card được chọn
+            document.querySelector(`[data-role="${role}"]`).classList.add('active');
+            
+            // Hiển thị form tương ứng
+            document.getElementById(`${role}-form`).classList.add('active');
+        }
+    </script>
+</body>
+</html>

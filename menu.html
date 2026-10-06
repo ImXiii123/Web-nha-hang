@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thực Đơn - Nhà Hàng Đình Quý</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+            background: #faf8f5; color: #2c2c2c; line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+
+        /* HEADER */
+        .site-header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; }
+        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { font-size: 28px; font-weight: bold; color: #8b0000; font-family: 'Playfair Display', Georgia, serif; }
+        .logo span { color: #c9a961; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #2c2c2c; font-weight: 500; font-size: 15px; transition: color 0.2s; position: relative; }
+        .nav-links a:hover, .nav-links a.active { color: #c9a961; }
+        .nav-links a.active::after { content: ''; position: absolute; bottom: -5px; left: 0; right: 0; height: 2px; background: #c9a961; }
+        .cart-badge {
+            position: absolute; top: -8px; right: -12px;
+            background: #dc3545; color: white; border-radius: 50%;
+            width: 20px; height: 20px; font-size: 11px;
+            display: none; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .btn-login, .btn-register { padding: 10px 22px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+        .btn-login { border: 2px solid #c9a961; color: #c9a961; background: transparent; }
+        .btn-login:hover { background: #c9a961; color: #fff; }
+        .btn-register { background: #c9a961; color: #fff; border: 2px solid #c9a961; }
+        .btn-register:hover { background: #b8944f; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        .page-title {
+            text-align: center; font-size: 36px; color: #8b0000;
+            font-family: 'Playfair Display', Georgia, serif;
+            margin: 40px 0 10px;
+        }
+        .page-title::after { content: ''; display: block; width: 80px; height: 3px; background: #c9a961; margin: 15px auto 0; }
+        .page-subtitle { text-align: center; color: #666; font-size: 16px; margin-bottom: 35px; font-style: italic; }
+
+        .menu-layout { display: grid; grid-template-columns: 260px 1fr; gap: 30px; margin: 30px 0; }
+
+        /* SIDEBAR */
+        .filter-sidebar {
+            background: #fff; padding: 25px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); height: fit-content;
+            position: sticky; top: 90px;
+        }
+        .filter-sidebar h3 {
+            color: #8b0000; font-family: 'Playfair Display', Georgia, serif;
+            font-size: 20px; margin-bottom: 15px; padding-bottom: 10px;
+            border-bottom: 2px solid #c9a961;
+        }
+        .filter-group { margin-bottom: 25px; }
+        .filter-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px; cursor: pointer; border-radius: 5px; transition: background 0.2s; font-size: 15px;
+        }
+        .filter-item:hover { background: #f9f9f9; }
+        .filter-item input[type="checkbox"], .filter-item input[type="radio"] {
+            width: 18px; height: 18px; cursor: pointer; accent-color: #c9a961;
+        }
+        .filter-item label { cursor: pointer; flex: 1; font-family: 'Inter', sans-serif; }
+
+        /* PRODUCT GRID */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .product-card {
+            background: #fff; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; background: #f0f0f0; }
+        .card-body { padding: 18px; }
+        .card-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #2c2c2c; }
+        .card-desc { font-size: 13px; color: #666; margin-bottom: 12px; height: 36px; overflow: hidden; }
+        .card-price { font-size: 20px; font-weight: bold; color: #c9a961; margin-bottom: 12px; font-family: 'Playfair Display', Georgia, serif; }
+        .card-actions { display: flex; gap: 8px; }
+        .btn-detail {
+            flex: 1; padding: 10px; background: #c9a961; color: #fff;
+            border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px; text-align: center;
+        }
+        .btn-detail:hover { background: #b8944f; }
+        .btn-add-cart {
+            flex: 1; padding: 10px; background: transparent; color: #c9a961;
+            border: 2px solid #c9a961; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px;
+        }
+        .btn-add-cart:hover { background: #c9a961; color: #fff; }
+
+        .no-result { text-align: center; padding: 60px 20px; color: #999; grid-column: 1 / -1; }
+
+        /* FOOTER */
+        .site-footer { background: #2c2420; color: #d4c5b0; padding: 30px 0; text-align: center; margin-top: 50px; }
+
+        @media (max-width: 768px) {
+            .menu-layout { grid-template-columns: 1fr; }
+            .filter-sidebar { position: static; }
+            .header-inner { flex-direction: column; gap: 10px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+            .page-title { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">Đình <span>Quý</span></a>
+            <nav class="nav-links">
+                <a href="index.html">Trang Chủ</a>
+                <a href="menu.html" class="active">Thực Đơn</a>
+                <a href="reservation.html">Đặt Bàn</a>
+                <a href="cart.html" style="position:relative;">Giỏ Hàng <span class="cart-badge" id="cart-badge">0</span></a>
+            </nav>
+            <div style="display:flex; gap:10px;">
+                <a href="login.html" class="btn-login">Đăng Nhập</a>
+                <a href="register.html" class="btn-register">Đăng Ký</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Thực Đơn Nhà Hàng</h1>
+        <p class="page-subtitle">Khám phá đa dạng ẩm thực từ Á đến Âu</p>
+
+        <div class="menu-layout">
+            <aside class="filter-sidebar">
+                <h3>Danh Mục</h3>
+                <div class="filter-group">
+                    <div class="filter-item"><input type="checkbox" class="filter-cb" value="asian" checked id="cat-asian"><label for="cat-asian">Món Á (5)</label></div>
+                    <div class="filter-item"><input type="checkbox" class="filter-cb" value="european" checked id="cat-european"><label for="cat-european">Món Âu (5)</label></div>
+                    <div class="filter-item"><input type="checkbox" class="filter-cb" value="seafood" checked id="cat-seafood"><label for="cat-seafood">Hải Sản & Món Nước (5)</label></div>
+                    <div class="filter-item"><input type="checkbox" class="filter-cb" value="drinks" checked id="cat-drinks"><label for="cat-drinks">Thức Uống (5)</label></div>
+                </div>
+
+                <h3>Khoảng Giá</h3>
+                <div class="filter-group">
+                    <div class="filter-item"><input type="radio" name="price" value="all" checked id="price-all"><label for="price-all">Tất cả</label></div>
+                    <div class="filter-item"><input type="radio" name="price" value="0-100000" id="price-1"><label for="price-1">Dưới 100.000đ</label></div>
+                    <div class="filter-item"><input type="radio" name="price" value="100000-200000" id="price-2"><label for="price-2">100.000đ - 200.000đ</label></div>
+                    <div class="filter-item"><input type="radio" name="price" value="200000-max" id="price-3"><label for="price-3">Trên 200.000đ</label></div>
+                </div>
+
+                <h3>Sắp Xếp</h3>
+                <div class="filter-group">
+                    <div class="filter-item"><input type="radio" name="sort" value="default" checked id="sort-default"><label for="sort-default">Mặc định</label></div>
+                    <div class="filter-item"><input type="radio" name="sort" value="asc" id="sort-asc"><label for="sort-asc">Giá tăng dần</label></div>
+                    <div class="filter-item"><input type="radio" name="sort" value="desc" id="sort-desc"><label for="sort-desc">Giá giảm dần</label></div>
+                </div>
+            </aside>
+
+            <main>
+                <div class="product-grid" id="product-list"></div>
+                <div class="no-result" id="no-result" style="display:none;">
+                    <p>🔍 Không tìm thấy món ăn phù hợp với bộ lọc.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container"><p>© 2026 Nhà hàng Đình Quý. All rights reserved.</p></div>
+    </footer>
+
+    <script>
+        // ===== DỮ LIỆU 20 MÓN - NHÚNG TRỰC TIẾP =====
+        const PRODUCTS = [
+            { id: 'M01', name: 'Phở Bò Đình Quý', category: 'asian', price: 85000, desc: 'Nước dùng hầm 12h, thịt bò tái chín', image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop' },
+            { id: 'M02', name: 'Bún Chả Hà Nội', category: 'asian', price: 75000, desc: 'Thịt nướng than hoa, bún tươi, rau sống', image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&h=400&fit=crop' },
+            { id: 'M03', name: 'Cơm Tấm Sườn Bì Chả', category: 'asian', price: 65000, desc: 'Sườn nướng mật ong, bì, chả trứng', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&h=400&fit=crop' },
+            { id: 'M04', name: 'Gỏi Cuốn Tôm Thịt', category: 'asian', price: 45000, desc: 'Tôm sú tươi, thịt luộc, rau sạch', image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=600&h=400&fit=crop&crop=entropy' },
+            { id: 'M05', name: 'Bánh Xèo Miền Tây', category: 'asian', price: 55000, desc: 'Vỏ giòn, nhân tôm thịt đầy đặn', image: 'https://images.unsplash.com/photo-1625938145312-c24c1d84821e?w=600&h=400&fit=crop' },
+            { id: 'M06', name: 'Bò Bít Tết Úc', category: 'european', price: 250000, desc: 'Sốt tiêu đen, khoai tây nghiền', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop' },
+            { id: 'M07', name: 'Mỳ Ý Sốt Cà Hải Sản', category: 'european', price: 120000, desc: 'Tôm, mực, hàu tươi sốt cà chua', image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&h=400&fit=crop' },
+            { id: 'M08', name: 'Súp Kem Nấm Hương', category: 'european', price: 90000, desc: 'Kem tươi, nấm đùi gà, bánh mì', image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop' },
+            { id: 'M09', name: 'Cá Hồi Áp Chảo', category: 'european', price: 180000, desc: 'Sốt chanh dây, măng tây tươi', image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&h=400&fit=crop' },
+            { id: 'M10', name: 'Salad Caesar Gà', category: 'european', price: 110000, desc: 'Ức gà nướng, phô mai Parmesan', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop' },
+            { id: 'M11', name: 'Lẩu Thái Hải Sản', category: 'seafood', price: 350000, desc: 'Chua cay, tôm, mực, cá basa', image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&h=400&fit=crop' },
+            { id: 'M12', name: 'Canh Chua Cá Lóc', category: 'seafood', price: 120000, desc: 'Bạc hà, đậu bắp, me tươi', image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop&crop=center' },
+            { id: 'M13', name: 'Cháo Ghẹ Rau Củ', category: 'seafood', price: 150000, desc: 'Ghẹ thịt, rau củ quả tươi', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&h=400&fit=crop&crop=faces' },
+            { id: 'M14', name: 'Súp Cua Trứng Cút', category: 'seafood', price: 80000, desc: 'Thịt cua ghẹ, nấm đông cô', image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=400&fit=crop&crop=entropy' },
+            { id: 'M15', name: 'Hàu Nướng Phô Mai', category: 'seafood', price: 45000, desc: 'Phô mai Mozzarella, hàu tươi', image: 'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=600&h=400&fit=crop' },
+            { id: 'M16', name: 'Trà Đào Cam Sả', category: 'drinks', price: 45000, desc: 'Đào miếng, cam tươi, sả thơm', image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&h=400&fit=crop' },
+            { id: 'M17', name: 'Sinh Tố Bơ Sầu Riêng', category: 'drinks', price: 55000, desc: 'Bơ sáp, sầu riêng Ri6', image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&h=400&fit=crop' },
+            { id: 'M18', name: 'Cà Phê Sữa Đá', category: 'drinks', price: 35000, desc: 'Cà phê Robusta rang mộc', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=400&fit=crop' },
+            { id: 'M19', name: 'Nước Ép Dưa Hấu', category: 'drinks', price: 40000, desc: 'Dưa hấu không hạt, tươi mát', image: 'https://images.unsplash.com/photo-1622597467536-70b3b5e1e7b7?w=600&h=400&fit=crop' },
+            { id: 'M20', name: 'Soda Bạc Hà Chanh', category: 'drinks', price: 45000, desc: 'Bạc hà tươi, chanh vàng', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&h=400&fit=crop' }
+        ];
+
+        function formatMoney(amount) { return Number(amount || 0).toLocaleString('vi-VN') + 'đ'; }
+
+        // ===== RENDER MENU =====
+        function renderMenu() {
+            const activeCategories = Array.from(document.querySelectorAll('.filter-cb:checked')).map(cb => cb.value);
+            const selectedPrice = document.querySelector('input[name="price"]:checked')?.value || 'all';
+            const selectedSort = document.querySelector('input[name="sort"]:checked')?.value || 'default';
+
+            let filtered = PRODUCTS.filter(p => {
+                const matchCat = activeCategories.includes(p.category);
+                let matchPrice = true;
+                if (selectedPrice === '0-100000') matchPrice = p.price < 100000;
+                else if (selectedPrice === '100000-200000') matchPrice = p.price >= 100000 && p.price <= 200000;
+                else if (selectedPrice === '200000-max') matchPrice = p.price > 200000;
+                return matchCat && matchPrice;
+            });
+
+            if (selectedSort === 'asc') filtered.sort((a,b) => a.price - b.price);
+            else if (selectedSort === 'desc') filtered.sort((a,b) => b.price - a.price);
+
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+
+            if (filtered.length === 0) {
+                document.getElementById('no-result').style.display = 'block';
+                return;
+            }
+            document.getElementById('no-result').style.display = 'none';
+
+            filtered.forEach(p => {
+                const card = document.createElement('article');
+                card.className = 'product-card';
+                card.dataset.id = p.id;
+                card.dataset.category = p.category;
+                card.dataset.price = p.price;
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/400x300/c9a961/ffffff?text=${encodeURIComponent(p.name)}';">
+                    <div class="card-body">
+                        <h3 class="card-title">${p.name}</h3>
+                        <p class="card-desc">${p.desc}</p>
+                        <div class="card-price">${formatMoney(p.price)}</div>
+                        <div class="card-actions">
+                            <a href="product-detail.html?id=${p.id}" class="btn-detail">Xem Chi Tiết</a>
+                            <button class="btn-add-cart" onclick="addToCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${p.image}','${p.desc.replace(/'/g,"\\'")}')">🛒 Thêm</button>
+                        </div>
+                    </div>
+                `;
+                productList.appendChild(card);
+            });
+        }
+
+        // ===== THÊM VÀO GIỎ =====
+        function addToCart(id, name, price, image, desc) {
+            let cart = [];
+            try { cart = JSON.parse(localStorage.getItem('cart_data')) || []; }
+            catch (e) { cart = []; }
+            const existingIndex = cart.findIndex(item => item.id === id);
+            if (existingIndex >= 0) {
+                cart[existingIndex].qty = (cart[existingIndex].qty || 1) + 1;
+                alert(`✅ Đã tăng "${name}" trong giỏ!\nSố lượng: ${cart[existingIndex].qty}`);
+            } else {
+                cart.push({ id, name, price, image, desc, qty: 1 });
+                alert(`✅ Đã thêm "${name}" vào giỏ hàng!`);
+            }
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart_data') || '[]');
+            const totalItems = cart.reduce((sum, i) => sum + (i.qty || 1), 0);
+            const badge = document.getElementById('cart-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+                badge.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        // ===== XỬ LÝ QUERY STRING TỪ TRANG CHỦ =====
+        function handleCategoryFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const category = params.get('category');
+            if (category) {
+                // Bỏ tick tất cả, chỉ tick category được chọn
+                document.querySelectorAll('.filter-cb').forEach(cb => {
+                    cb.checked = (cb.value === category);
+                });
+                console.log('🔗 Filter theo category từ URL:', category);
+            }
+        }
+
+        // Gắn sự kiện filter
+        document.querySelectorAll('.filter-cb, input[name="price"], input[name="sort"]').forEach(el => {
+            el.addEventListener('change', renderMenu);
+        });
+
+        // Khởi động
+        handleCategoryFromUrl();
+        renderMenu();
+        updateCartBadge();
+
+        console.log('✅ Menu loaded:', PRODUCTS.length, 'products');
+    </script>
+</body>
+</html>

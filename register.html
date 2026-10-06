@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký - Đình Quý</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .register-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; }
+        .register-box { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-width: 500px; width: 100%; }
+        .register-box h1 { text-align: center; color: var(--secondary-color); margin-bottom: 10px; }
+        .register-box .subtitle { text-align: center; color: var(--gray); margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="register-page">
+        <div class="register-box">
+            <h1>Đình <span style="color: var(--primary-color);">Quý</span></h1>
+            <p class="subtitle">Tạo tài khoản để nhận ưu đãi và tích điểm</p>
+            
+            <form id="register-form" action="login.html" method="GET">
+                <div class="form-group">
+                    <label for="register-name">Họ và tên <span style="color:red">*</span></label>
+                    <input type="text" id="register-name" class="form-control" placeholder="Nguyễn Văn A" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-username">Tên đăng nhập <span style="color:red">*</span></label>
+                    <input type="text" id="register-username" class="form-control" placeholder="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email <span style="color:red">*</span></label>
+                    <input type="email" id="register-email" class="form-control" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-phone">Số điện thoại <span style="color:red">*</span></label>
+                    <input type="tel" id="register-phone" class="form-control" placeholder="0901234567" required>
+                    <div class="error-message" id="register-phone-error">⚠️ Vui lòng nhập đúng số điện thoại (10-11 chữ số)</div>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Mật khẩu <span style="color:red">*</span></label>
+                    <input type="password" id="register-password" class="form-control" placeholder="Tối thiểu 6 ký tự" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm">Xác nhận mật khẩu <span style="color:red">*</span></label>
+                    <input type="password" id="register-confirm" class="form-control" placeholder="Nhập lại mật khẩu" required>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px;">
+                        <input type="checkbox" required> Tôi đồng ý với <a href="#" style="color: var(--primary-color);">điều khoản sử dụng</a>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 15px;">Đăng Ký</button>
+            </form>
+            <p style="text-align: center; margin-top: 20px; color: var(--gray);">
+                Đã có tài khoản? <a href="login.html" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Đăng nhập</a>
+            </p>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

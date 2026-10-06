@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhà Hàng Đình Quý - Ẩm Thực Á Âu Đỉnh Cao</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+            background: #faf8f5;
+            color: #2c2c2c;
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+
+        /* HEADER */
+        .site-header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; }
+        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { font-size: 28px; font-weight: bold; color: #8b0000; font-family: 'Playfair Display', Georgia, serif; }
+        .logo span { color: #c9a961; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #2c2c2c; font-weight: 500; font-size: 15px; transition: color 0.2s; position: relative; }
+        .nav-links a:hover, .nav-links a.active { color: #c9a961; }
+        .nav-links a.active::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; right: 0;
+            height: 2px; background: #c9a961;
+        }
+        .cart-badge {
+            position: absolute; top: -8px; right: -12px;
+            background: #dc3545; color: white; border-radius: 50%;
+            width: 20px; height: 20px; font-size: 11px;
+            display: none; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .btn-login, .btn-register { padding: 10px 22px; border-radius: 6px; font-weight: 600; font-size: 14px; }
+        .btn-login { border: 2px solid #c9a961; color: #c9a961; background: transparent; }
+        .btn-login:hover { background: #c9a961; color: #fff; }
+        .btn-register { background: #c9a961; color: #fff; border: 2px solid #c9a961; }
+        .btn-register:hover { background: #b8944f; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+                        url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600') center/cover;
+            height: 520px;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; color: #fff;
+        }
+        .hero-content { max-width: 800px; padding: 0 20px; }
+        .hero-content h1 {
+            font-size: 52px; font-family: 'Playfair Display', Georgia, serif;
+            margin-bottom: 15px; text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+        .hero-content .subtitle {
+            font-size: 20px; font-style: italic; margin-bottom: 10px; color: #f5e6c8;
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+        .hero-content .tagline { font-size: 16px; margin-bottom: 30px; color: #fff; }
+        .hero-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        .btn-hero {
+            padding: 14px 32px; border-radius: 6px; font-size: 16px;
+            font-weight: 600; cursor: pointer; transition: all 0.3s;
+            border: 2px solid transparent; font-family: 'Inter', sans-serif;
+        }
+        .btn-hero-primary { background: #c9a961; color: #fff; border-color: #c9a961; }
+        .btn-hero-primary:hover { background: #b8944f; transform: translateY(-2px); }
+        .btn-hero-outline { background: transparent; color: #fff; border-color: #fff; }
+        .btn-hero-outline:hover { background: #fff; color: #8b0000; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        .section-title {
+            text-align: center; font-size: 36px; color: #8b0000;
+            font-family: 'Playfair Display', Georgia, serif;
+            margin: 50px 0 10px;
+        }
+        .section-title::after {
+            content: ''; display: block; width: 80px; height: 3px;
+            background: #c9a961; margin: 15px auto 0;
+        }
+        .section-subtitle {
+            text-align: center; color: #666; font-size: 16px;
+            margin-bottom: 35px; font-style: italic;
+        }
+
+        /* CATEGORY GRID */
+        .category-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 25px; margin: 40px 0;
+        }
+        .category-card {
+            background: #fff; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s; cursor: pointer;
+        }
+        .category-card:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+        .category-card img { width: 100%; height: 220px; object-fit: cover; }
+        .category-card-body { padding: 20px; text-align: center; }
+        .category-card-body h3 {
+            color: #8b0000; font-size: 22px; margin-bottom: 10px;
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+        .category-card-body p { color: #666; font-size: 14px; line-height: 1.6; }
+        .category-card-body .dish-list { margin-top: 10px; font-size: 13px; color: #888; }
+
+        /* PRODUCT GRID */
+        .product-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px; margin: 40px 0;
+        }
+        .product-card {
+            background: #fff; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .product-card img { width: 100%; height: 200px; object-fit: cover; background: #f0f0f0; }
+        .card-body { padding: 18px; }
+        .card-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #2c2c2c; }
+        .card-desc { font-size: 13px; color: #666; margin-bottom: 12px; height: 36px; overflow: hidden; }
+        .card-price {
+            font-size: 20px; font-weight: bold; color: #c9a961; margin-bottom: 12px;
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+        .card-actions { display: flex; gap: 8px; }
+        .btn-detail {
+            flex: 1; padding: 10px; background: #c9a961; color: #fff;
+            border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px; text-align: center;
+        }
+        .btn-detail:hover { background: #b8944f; }
+        .btn-add-cart {
+            flex: 1; padding: 10px; background: transparent; color: #c9a961;
+            border: 2px solid #c9a961; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 13px;
+        }
+        .btn-add-cart:hover { background: #c9a961; color: #fff; }
+
+        /* WHY US */
+        .why-us {
+            background: linear-gradient(135deg, #8b0000 0%, #c9a961 100%);
+            color: #fff; padding: 60px 0; margin: 50px 0;
+        }
+        .why-us .section-title { color: #fff; margin-top: 0; }
+        .why-us .section-title::after { background: #fff; }
+        .why-us .section-subtitle { color: #f5e6c8; }
+        .why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 40px; }
+        .why-card {
+            text-align: center; padding: 30px 20px;
+            background: rgba(255,255,255,0.1); border-radius: 12px;
+            backdrop-filter: blur(10px); transition: transform 0.3s;
+        }
+        .why-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.15); }
+        .why-card .icon { font-size: 48px; margin-bottom: 15px; }
+        .why-card h3 { font-size: 20px; margin-bottom: 10px; font-family: 'Playfair Display', Georgia, serif; }
+        .why-card p { font-size: 14px; line-height: 1.6; opacity: 0.9; }
+
+        /* TESTIMONIALS */
+        .testimonials { background: #fff; padding: 50px 0; margin: 40px 0; border-radius: 12px; }
+        .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 30px; }
+        .testimonial-card {
+            background: #faf8f5; padding: 25px; border-radius: 10px;
+            border-left: 4px solid #c9a961;
+        }
+        .testimonial-card .stars { color: #f59e0b; margin-bottom: 10px; }
+        .testimonial-card .text { color: #555; font-style: italic; margin-bottom: 15px; line-height: 1.6; }
+        .testimonial-card .author { font-weight: 600; color: #8b0000; }
+        .testimonial-card .role { font-size: 13px; color: #999; }
+
+        /* CTA */
+        .cta-banner {
+            background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600') center/cover;
+            position: relative; padding: 80px 20px; text-align: center;
+            color: #fff; margin: 40px 0; border-radius: 12px; overflow: hidden;
+        }
+        .cta-banner::before { content: ''; position: absolute; inset: 0; background: rgba(139,0,0,0.75); }
+        .cta-banner > * { position: relative; z-index: 1; }
+        .cta-banner h2 { font-size: 36px; font-family: 'Playfair Display', Georgia, serif; margin-bottom: 15px; }
+        .cta-banner p { font-size: 18px; margin-bottom: 25px; }
+
+        /* FOOTER */
+        .site-footer { background: #2c2420; color: #d4c5b0; padding: 50px 0 20px; margin-top: 50px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-bottom: 30px; }
+        .footer-col h3 { color: #c9a961; margin-bottom: 15px; font-size: 18px; font-family: 'Playfair Display', Georgia, serif; }
+        .footer-col p, .footer-col a { color: #d4c5b0; font-size: 14px; line-height: 1.8; display: block; }
+        .footer-col a:hover { color: #c9a961; }
+        .footer-bottom { text-align: center; padding-top: 20px; border-top: 1px solid #4a3f35; font-size: 13px; }
+
+        @media (max-width: 992px) {
+            .category-grid, .why-grid { grid-template-columns: repeat(2, 1fr); }
+            .testimonial-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .hero { height: 400px; }
+            .hero-content h1 { font-size: 32px; }
+            .category-grid, .why-grid, .footer-grid { grid-template-columns: 1fr; }
+            .header-inner { flex-direction: column; gap: 10px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 15px; }
+            .section-title { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">Đình <span>Quý</span></a>
+            <nav class="nav-links">
+                <a href="index.html" class="active">Trang Chủ</a>
+                <a href="menu.html">Thực Đơn</a>
+                <a href="reservation.html">Đặt Bàn</a>
+                <a href="cart.html" style="position:relative;">Giỏ Hàng <span class="cart-badge" id="cart-badge">0</span></a>
+            </nav>
+            <div style="display:flex; gap:10px;">
+                <a href="login.html" class="btn-login">Đăng Nhập</a>
+                <a href="register.html" class="btn-register">Đăng Ký</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Nhà Hàng Đình Quý</h1>
+            <p class="subtitle">"Nơi hương vị Á - Âu hội tụ"</p>
+            <p class="tagline">Trải nghiệm ẩm thực đỉnh cao với nguyên liệu tươi ngon nhất</p>
+            <div class="hero-buttons">
+                <a href="menu.html" class="btn-hero btn-hero-primary">Xem Thực Đơn</a>
+                <a href="reservation.html" class="btn-hero btn-hero-outline">Đặt Bàn Ngay</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2 class="section-title">Danh Mục Món Ăn</h2>
+        <p class="section-subtitle">Khám phá đa dạng ẩm thực từ Á đến Âu</p>
+
+        <div class="category-grid">
+            <a href="menu.html?category=asian" class="category-card">
+                <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop" alt="Món Á">
+                <div class="category-card-body">
+                    <h3>Món Á</h3>
+                    <p>Ẩm thực truyền thống Việt Nam và châu Á</p>
+                    <p class="dish-list">Phở • Bún chả • Cơm tấm • Gỏi cuốn • Bánh xèo</p>
+                </div>
+            </a>
+            <a href="menu.html?category=european" class="category-card">
+                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop" alt="Món Âu">
+                <div class="category-card-body">
+                    <h3>Món Âu</h3>
+                    <p>Ẩm thực châu Âu sang trọng, tinh tế</p>
+                    <p class="dish-list">Bò bít tết • Mỳ Ý • Súp kem • Cá hồi • Salad</p>
+                </div>
+            </a>
+            <a href="menu.html?category=seafood" class="category-card">
+                <img src="https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=600&h=400&fit=crop" alt="Hải Sản">
+                <div class="category-card-body">
+                    <h3>Hải Sản & Món Nước</h3>
+                    <p>Hải sản tươi sống mỗi ngày</p>
+                    <p class="dish-list">Lẩu Thái • Canh chua • Cháo ghẹ • Súp cua • Hàu nướng</p>
+                </div>
+            </a>
+            <a href="menu.html?category=drinks" class="category-card">
+                <img src="https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&h=400&fit=crop" alt="Thức Uống">
+                <div class="category-card-body">
+                    <h3>Thức Uống</h3>
+                    <p>Đồ uống tươi mát, đa dạng</p>
+                    <p class="dish-list">Trà đào • Cà phê • Sinh tố • Nước ép • Soda</p>
+                </div>
+            </a>
+        </div>
+
+        <h2 class="section-title">Món Ăn Đề Cử</h2>
+        <p class="section-subtitle">Những món được yêu thích nhất tại Đình Quý</p>
+
+        <div class="product-grid" id="featured-products"></div>
+
+        <div style="text-align:center; margin: 30px 0 50px;">
+            <a href="menu.html" class="btn-hero btn-hero-primary" style="display:inline-block;">Xem Tất Cả Món Ăn →</a>
+        </div>
+    </div>
+
+    <section class="why-us">
+        <div class="container">
+            <h2 class="section-title">Tại Sao Chọn Đình Quý?</h2>
+            <p class="section-subtitle">Những lý do khiến chúng tôi khác biệt</p>
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="icon">🥩</div>
+                    <h3>Nguyên Liệu Tươi</h3>
+                    <p>Nhập khẩu và chọn lọc mỗi ngày từ nguồn cung cấp uy tín</p>
+                </div>
+                <div class="why-card">
+                    <div class="icon">👨‍🍳</div>
+                    <h3>Đầu Bếp Chuyên Nghiệp</h3>
+                    <p>Đội ngũ đầu bếp 20 năm kinh nghiệm ẩm thực Á - Âu</p>
+                </div>
+                <div class="why-card">
+                    <div class="icon">⭐</div>
+                    <h3>Không Gian Sang Trọng</h3>
+                    <p>Phù hợp tiệc gia đình, họp mặt doanh nghiệp, hẹn hò</p>
+                </div>
+                <div class="why-card">
+                    <div class="icon">🎁</div>
+                    <h3>Ưu Đãi Hấp Dẫn</h3>
+                    <p>Chương trình tích điểm, giảm giá cho khách hàng thân thiết</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="testimonials">
+            <h2 class="section-title" style="margin-top:0;">Khách Hàng Nói Gì?</h2>
+            <p class="section-subtitle">Những đánh giá từ thực khách của chúng tôi</p>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="text">"Bò bít tết ở đây ngon nhất Sài Gòn! Thịt mềm, sốt đậm đà, không gian sang trọng. Chắc chắn sẽ quay lại."</p>
+                    <p class="author">Nguyễn Văn An</p>
+                    <p class="role">Khách hàng VIP</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="text">"Phở bò nước dùng hầm 12h thơm lừng, đúng vị truyền thống. Nhân viên phục vụ rất nhiệt tình và chu đáo."</p>
+                    <p class="author">Trần Thị Bình</p>
+                    <p class="role">Khách hàng thân thiết</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★☆</div>
+                    <p class="text">"Lẩu Thái hải sản tươi ngon, nước lẩu chua cay vừa miệng. Giá cả hợp lý so với chất lượng. Recommend!"</p>
+                    <p class="author">Lê Minh Cường</p>
+                    <p class="role">Food Blogger</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="cta-banner">
+            <h2>Đặt Bàn Ngay Hôm Nay</h2>
+            <p>Ưu đãi 10% cho đơn hàng đầu tiên khi đặt bàn trực tuyến</p>
+            <a href="reservation.html" class="btn-hero btn-hero-primary" style="display:inline-block;">Đặt Bàn Ngay</a>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Nhà Hàng Đình Quý</h3>
+                    <p>123 Đường Nguyễn Huệ, Quận 1, TP.HCM</p>
+                    <p>Hotline: 1900 xxxx</p>
+                    <p>info@dinhquy.vn</p>
+                    <p>Mở cửa: 10:00 - 22:30</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Liên Kết</h3>
+                    <a href="index.html">Trang chủ</a>
+                    <a href="menu.html">Thực đơn</a>
+                    <a href="reservation.html">Đặt bàn</a>
+                    <a href="cart.html">Giỏ hàng</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Chính Sách</h3>
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Điều khoản sử dụng</a>
+                    <a href="#">Chính sách đổi trả</a>
+                    <a href="#">Chương trình tích điểm</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Kết Nối</h3>
+                    <p>Theo dõi chúng tôi trên:</p>
+                    <p style="margin-top:10px;">Facebook | Instagram | YouTube</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Nhà hàng Đình Quý. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/products.js"></script>
+    <script>
+        function renderFeaturedProducts() {
+            const featured = PRODUCTS.filter(p => ['M01', 'M06', 'M11', 'M16'].includes(p.id));
+            const container = document.getElementById('featured-products');
+            featured.forEach(p => {
+                const card = document.createElement('article');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://placehold.co/400x300/c9a961/ffffff?text=${encodeURIComponent(p.name)}';">
+                    <div class="card-body">
+                        <h3 class="card-title">${p.name}</h3>
+                        <p class="card-desc">${p.desc}</p>
+                        <div class="card-price">${formatMoney(p.price)}</div>
+                        <div class="card-actions">
+                            <a href="product-detail.html?id=${p.id}" class="btn-detail">Xem Chi Tiết</a>
+                            <button class="btn-add-cart" onclick="addToCart('${p.id}','${p.name.replace(/'/g,"\\'")}',${p.price},'${p.image}','${p.desc.replace(/'/g,"\\'")}')">Thêm</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addToCart(id, name, price, image, desc) {
+            let cart = [];
+            try { cart = JSON.parse(localStorage.getItem('cart_data')) || []; }
+            catch (e) { cart = []; }
+            const existingIndex = cart.findIndex(item => item.id === id);
+            if (existingIndex >= 0) {
+                cart[existingIndex].qty = (cart[existingIndex].qty || 1) + 1;
+                alert(`Đã tăng "${name}" trong giỏ!\nSố lượng: ${cart[existingIndex].qty}`);
+            } else {
+                cart.push({ id, name, price, image, desc, qty: 1 });
+                alert(`Đã thêm "${name}" vào giỏ hàng!`);
+            }
+            localStorage.setItem('cart_data', JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart_data') || '[]');
+            const totalItems = cart.reduce((sum, i) => sum + (i.qty || 1), 0);
+            const badge = document.getElementById('cart-badge');
+            if (badge) {
+                badge.textContent = totalItems;
+                badge.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        renderFeaturedProducts();
+        updateCartBadge();
+    </script>
+</body>
+</html>
