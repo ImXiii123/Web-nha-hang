@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý thực đơn - Đình Quý</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* ===== Giao diện giống screenshot ===== */
+        .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+        
+        .admin-sidebar {
+            background: #2c2c2c;
+            color: #fff;
+            padding: 25px 0;
+        }
+        .admin-sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #444;
+            margin-bottom: 20px;
+        }
+        .admin-sidebar-header h2 {
+            color: #c9a961;
+            font-family: Georgia, serif;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .admin-sidebar-header p {
+            color: #999;
+            font-size: 13px;
+        }
+        .admin-menu { list-style: none; }
+        .admin-menu li a {
+            display: block;
+            padding: 14px 20px;
+            color: #ddd;
+            text-decoration: none;
+            font-size: 15px;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+        .admin-menu li a:hover {
+            background: #3a3a3a;
+            border-left-color: #c9a961;
+            color: #fff;
+        }
+        .admin-menu li a.active {
+            background: #c9a961;
+            color: #fff;
+            border-left-color: #c9a961;
+        }
+        
+        .admin-content {
+            background: #f5f5f5;
+            padding: 30px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .admin-header h1 {
+            color: #2c2c2c;
+            font-size: 28px;
+            margin: 0;
+        }
+        .user-avatar {
+            width: 42px; height: 42px;
+            background: #c9a961;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold;
+        }
+        
+        .content-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 25px;
+        }
+        .content-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .content-card-header h3 {
+            margin: 0;
+            color: #2c2c2c;
+            font-size: 20px;
+        }
+        
+        /* ===== Toolbar: Search + Filter + Add ===== */
+        .toolbar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .toolbar .search-box {
+            flex: 1;
+            position: relative;
+        }
+        .toolbar .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .toolbar .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .toolbar select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 160px;
+        }
+        
+        /* ===== Add món từ dropdown ===== */
+        .add-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #fff9e6;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border-left: 4px solid #c9a961;
+            margin-bottom: 20px;
+        }
+        .add-section select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .add-section .btn-add-confirm {
+            background: #c9a961;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .add-section .btn-add-confirm:hover { background: #b8944f; }
+        .add-section .btn-cancel {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* ===== Table ===== */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            background: #c9a961;
+            color: #fff;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .data-table td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+        .data-table tr:hover { background: #fafafa; }
+        
+        .btn-delete {
+            background: #8b0000;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-delete:hover { background: #6d0000; }
+        
+        .status-select {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .status-select:focus { outline: 2px solid #c9a961; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h2>Đình Quý</h2>
+                <p>Admin Panel</p>
+            </div>
+            <ul class="admin-menu">
+                <li><a href="dashboard.html">📊 Tổng Quan</a></li>
+                <li><a href="menu-manage.html" class="active">🍽️ Quản Lý Thực Đơn</a></li>
+                <li><a href="employee.html">👔 Quản Lý Nhân Sự</a></li>
+                <li><a href="table-manage.html">🪑 Quản Lý Bàn</a></li>
+                <li><a href="order-manage.html">📋 Đặt Món</a></li>
+                <li><a href="customer.html">👥 Khách Hàng</a></li>
+                <li><a href="inventory.html">📦 Quản Lý Kho</a></li>
+                <li><a href="import.html">📥 Nhập Kho</a></li>
+                <li><a href="export.html">📤 Xuất Kho</a></li>
+                <li><a href="../index.html" style="margin-top:30px; color:#ff6b6b;">🚪 Đăng Xuất</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <div class="admin-header">
+                <h1>Quản Lý Thực Đơn</h1>
+                <div class="user-avatar">QL</div>
+            </div>
+
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h3>Danh sách món ăn</h3>
+                    <button class="btn-add-confirm" id="btn-show-add" style="background:#c9a961; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:600;">+ Thêm món mới</button>
+                </div>
+
+                <!-- Khu vực chọn món từ dropdown (ẩn mặc định) -->
+                <div class="add-section" id="add-section" style="display:none;">
+                    <label style="font-weight:600; white-space:nowrap;">Chọn món:</label>
+                    <select id="select-dish">
+                        <option value="">-- Chọn món từ danh sách có sẵn --</option>
+                        <optgroup label="🍜 Món Á">
+                            <option value="asian|Phở bò Đình Quý|85000">Phở bò Đình Quý - 85.000đ</option>
+                            <option value="asian|Bún chả Hà Nội|75000">Bún chả Hà Nội - 75.000đ</option>
+                            <option value="asian|Cơm tấm sườn bì chả|65000">Cơm tấm sườn bì chả - 65.000đ</option>
+                            <option value="asian|Gỏi cuốn tôm thịt|45000">Gỏi cuốn tôm thịt - 45.000đ</option>
+                            <option value="asian|Bánh xèo miền Tây|55000">Bánh xèo miền Tây - 55.000đ</option>
+                        </optgroup>
+                        <optgroup label="🥩 Món Âu">
+                            <option value="european|Bò bít tết Úc|250000">Bò bít tết Úc - 250.000đ</option>
+                            <option value="european|Mỳ Ý sốt cà hải sản|120000">Mỳ Ý sốt cà hải sản - 120.000đ</option>
+                            <option value="european|Súp kem nấm hương|90000">Súp kem nấm hương - 90.000đ</option>
+                            <option value="european|Cá hồi áp chảo|180000">Cá hồi áp chảo - 180.000đ</option>
+                            <option value="european|Salad Caesar gà|110000">Salad Caesar gà - 110.000đ</option>
+                        </optgroup>
+                        <optgroup label=" Hải sản & Món Nước">
+                            <option value="seafood|Lẩu Thái hải sản|350000">Lẩu Thái hải sản - 350.000đ</option>
+                            <option value="seafood|Canh chua cá lóc|120000">Canh chua cá lóc - 120.000đ</option>
+                            <option value="seafood|Cháo ghẹ rau củ|150000">Cháo ghẹ rau củ - 150.000đ</option>
+                            <option value="seafood|Súp cua trứng cút|80000">Súp cua trứng cút - 80.000đ</option>
+                            <option value="seafood|Hàu nướng phô mai|45000">Hàu nướng phô mai - 45.000đ/con</option>
+                        </optgroup>
+                        <optgroup label="🥤 Thức Uống">
+                            <option value="drinks|Trà đào cam sả|45000">Trà đào cam sả - 45.000đ</option>
+                            <option value="drinks|Sinh tố bơ sầu riêng|55000">Sinh tố bơ sầu riêng - 55.000đ</option>
+                            <option value="drinks|Cà phê sữa đá|35000">Cà phê sữa đá - 35.000đ</option>
+                            <option value="drinks|Nước ép dưa hấu|40000">Nước ép dưa hấu - 40.000đ</option>
+                            <option value="drinks|Soda bạc hà chanh|45000">Soda bạc hà chanh - 45.000đ</option>
+                        </optgroup>
+                    </select>
+                    <button class="btn-add-confirm" id="btn-confirm-add">✓ Thêm vào thực đơn</button>
+                    <button class="btn-cancel" id="btn-cancel-add"> Hủy</button>
+                </div>
+
+                <!-- Toolbar tìm kiếm + lọc -->
+                <div class="toolbar">
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Tìm kiếm món ăn...">
+                    </div>
+                    <select id="filter-category">
+                        <option value="">Tất cả danh mục</option>
+                        <option value="Món Á">Món Á</option>
+                        <option value="Món Âu">Món Âu</option>
+                        <option value="Hải sản">Hải sản</option>
+                        <option value="Thức Uống">Thức Uống</option>
+                    </select>
+                </div>
+
+                <!-- Table (KHÔNG có cột Ảnh) -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:80px;">ID</th>
+                            <th>Tên món</th>
+                            <th>Danh mục</th>
+                            <th style="width:120px;">Giá</th>
+                            <th style="width:150px;">Trạng thái</th>
+                            <th style="width:130px;">Ngày tạo</th>
+                            <th style="width:100px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="menu-tbody">
+                        <tr data-category="Món Á">
+                            <td>#M01</td>
+                            <td>Phở bò Đình Quý</td>
+                            <td>Món Á</td>
+                            <td>85.000đ</td>
+                            <td>
+                                <select class="status-select">
+                                    <option value="success" selected>Còn món</option>
+                                    <option value="warning">Sắp hết</option>
+                                    <option value="danger">Hết món</option>
+                                </select>
+                            </td>
+                            <td>01/10/2026</td>
+                            <td><button class="btn-delete">🗑 Xóa</button></td>
+                        </tr>
+                        <tr data-category="Món Âu">
+                            <td>#M02</td>
+                            <td>Bò bít tết Úc</td>
+                            <td>Món Âu</td>
+                            <td>250.000đ</td>
+                            <td>
+                                <select class="status-select">
+                                    <option value="success" selected>Còn món</option>
+                                    <option value="warning">Sắp hết</option>
+                                    <option value="danger">Hết món</option>
+                                </select>
+                            </td>
+                            <td>01/10/2026</td>
+                            <td><button class="btn-delete">🗑 Xóa</button></td>
+                        </tr>
+                        <tr data-category="Hải sản">
+                            <td>#M03</td>
+                            <td>Lẩu Thái hải sản</td>
+                            <td>Hải sản</td>
+                            <td>350.000đ</td>
+                            <td>
+                                <select class="status-select">
+                                    <option value="success">Còn món</option>
+                                    <option value="warning" selected>Sắp hết</option>
+                                    <option value="danger">Hết món</option>
+                                </select>
+                            </td>
+                            <td>02/10/2026</td>
+                            <td><button class="btn-delete">🗑 Xóa</button></td>
+                        </tr>
+                        <tr data-category="Thức Uống">
+                            <td>#M04</td>
+                            <td>Trà đào cam sả</td>
+                            <td>Thức Uống</td>
+                            <td>45.000đ</td>
+                            <td>
+                                <select class="status-select">
+                                    <option value="success" selected>Còn món</option>
+                                    <option value="warning">Sắp hết</option>
+                                    <option value="danger">Hết món</option>
+                                </select>
+                            </td>
+                            <td>02/10/2026</td>
+                            <td><button class="btn-delete">🗑 Xóa</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="empty-state" id="empty-state" style="display:none;">
+                    <p>Không tìm thấy món ăn nào.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.getElementById('menu-tbody');
+            const btnShowAdd = document.getElementById('btn-show-add');
+            const addSection = document.getElementById('add-section');
+            const btnConfirmAdd = document.getElementById('btn-confirm-add');
+            const btnCancelAdd = document.getElementById('btn-cancel-add');
+            const selectDish = document.getElementById('select-dish');
+            const searchInput = document.getElementById('search-input');
+            const filterCategory = document.getElementById('filter-category');
+            const emptyState = document.getElementById('empty-state');
+            
+            let dishCounter = 5; // ID tiếp theo sẽ là #M05
+
+            // ===== 1. Hiện/ẩn khu vực thêm món =====
+            btnShowAdd.addEventListener('click', function() {
+                addSection.style.display = 'flex';
+                selectDish.focus();
+            });
+            btnCancelAdd.addEventListener('click', function() {
+                addSection.style.display = 'none';
+                selectDish.value = '';
+            });
+
+            // ===== 2. Thêm món từ dropdown =====
+            btnConfirmAdd.addEventListener('click', function() {
+                const value = selectDish.value;
+                if (!value) {
+                    alert('⚠️ Vui lòng chọn một món từ danh sách!');
+                    return;
+                }
+                
+                const [catKey, name, price] = value.split('|');
+                
+                // Map category key → tên hiển thị
+                const catMap = {
+                    'asian': 'Món Á',
+                    'european': 'Món Âu',
+                    'seafood': 'Hải sản',
+                    'drinks': 'Thức Uống'
+                };
+                
+                const categoryName = catMap[catKey] || catKey;
+                const id = '#M' + String(dishCounter).padStart(2, '0');
+                dishCounter++;
+                
+                // Lấy ngày hiện tại
+                const today = new Date();
+                const dateStr = String(today.getDate()).padStart(2,'0') + '/' + 
+                                String(today.getMonth()+1).padStart(2,'0') + '/' + 
+                                today.getFullYear();
+                
+                const newRow = document.createElement('tr');
+                newRow.dataset.category = categoryName;
+                newRow.innerHTML = `
+                    <td>${id}</td>
+                    <td>${name}</td>
+                    <td>${categoryName}</td>
+                    <td>${parseInt(price).toLocaleString('vi-VN')}đ</td>
+                    <td>
+                        <select class="status-select">
+                            <option value="success" selected>Còn món</option>
+                            <option value="warning">Sắp hết</option>
+                            <option value="danger">Hết món</option>
+                        </select>
+                    </td>
+                    <td>${dateStr}</td>
+                    <td><button class="btn-delete"> Xóa</button></td>
+                `;
+                
+                tbody.appendChild(newRow);
+                
+                // Hiệu ứng highlight row mới
+                newRow.style.background = '#fff9e6';
+                newRow.style.transition = 'background 1s';
+                setTimeout(() => { newRow.style.background = ''; }, 1000);
+                
+                // Reset
+                selectDish.value = '';
+                addSection.style.display = 'none';
+                
+                alert(`✅ Đã thêm "${name}" vào thực đơn!`);
+                applyFilters();
+            });
+
+            // ===== 3. Xóa row =====
+            tbody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-delete')) {
+                    const row = e.target.closest('tr');
+                    const dishName = row.cells[1].textContent;
+                    if (confirm(`Bạn có chắc muốn xóa "${dishName}" khỏi thực đơn?`)) {
+                        row.style.transition = 'all 0.3s';
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateX(20px)';
+                        setTimeout(() => {
+                            row.remove();
+                            applyFilters();
+                        }, 300);
+                    }
+                }
+            });
+
+            // ===== 4. Đổi trạng thái (dropdown) =====
+            tbody.addEventListener('change', function(e) {
+                if (e.target.classList.contains('status-select')) {
+                    const row = e.target.closest('tr');
+                    row.style.background = '#fff9e6';
+                    setTimeout(() => { row.style.background = ''; }, 500);
+                }
+            });
+
+            // ===== 5. Tìm kiếm + Lọc danh mục =====
+            searchInput.addEventListener('input', applyFilters);
+            filterCategory.addEventListener('change', applyFilters);
+
+            function applyFilters() {
+                const keyword = searchInput.value.toLowerCase();
+                const cat = filterCategory.value;
+                const rows = tbody.querySelectorAll('tr');
+                let visibleCount = 0;
+                
+                rows.forEach(row => {
+                    const name = row.cells[1].textContent.toLowerCase();
+                    const rowCat = row.dataset.category;
+                    const matchKeyword = name.includes(keyword);
+                    const matchCat = !cat || rowCat === cat;
+                    
+                    if (matchKeyword && matchCat) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+        });
+    </script>
+</body>
+</html>

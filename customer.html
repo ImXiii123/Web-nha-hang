@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý khách hàng - Đình Quý</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <style>
+        .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+        .admin-sidebar { background: #2c2c2c; color: #fff; padding: 25px 0; }
+        .admin-sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid #444; margin-bottom: 20px; }
+        .admin-sidebar-header h2 { color: #c9a961; font-family: Georgia, serif; font-size: 24px; margin-bottom: 5px; }
+        .admin-sidebar-header p { color: #999; font-size: 13px; }
+        .admin-menu { list-style: none; }
+        .admin-menu li a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 20px; color: #ddd; text-decoration: none;
+            font-size: 15px; border-left: 4px solid transparent; transition: all 0.2s;
+        }
+        .admin-menu li a:hover { background: #3a3a3a; border-left-color: #c9a961; color: #fff; }
+        .admin-menu li a.active { background: #c9a961; color: #fff; border-left-color: #c9a961; }
+        .admin-menu li a.logout { margin-top: 30px; color: #ff6b6b; }
+        .admin-menu li a.logout:hover { background: rgba(255,107,107,0.1); border-left-color: #ff6b6b; }
+        .admin-menu li a .icon { font-size: 18px; width: 24px; text-align: center; }
+        .admin-content { background: #f5f5f5; padding: 30px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .admin-header h1 { color: #2c2c2c; font-size: 28px; margin: 0; }
+        .btn-add { background: #c9a961; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .btn-add:hover { background: #b8944f; }
+        .btn-reset { background: #17a2b8; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; margin-left: 10px; }
+        .btn-reset:hover { background: #138496; }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        .kpi-card {
+            background: #fff; padding: 22px; border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #c9a961;
+        }
+        .kpi-card .kpi-label { font-size: 14px; color: #666; margin-bottom: 10px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .kpi-card .kpi-value { font-size: 32px; font-weight: bold; color: #2c2c2c; }
+
+        .content-card { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 25px; }
+        .content-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .content-card-header h3 { margin: 0; color: #2c2c2c; font-size: 20px; }
+
+        .add-section {
+            display: none; gap: 10px; align-items: center;
+            background: #fff9e6; padding: 12px 15px; border-radius: 6px;
+            border-left: 4px solid #c9a961; margin-bottom: 20px; flex-wrap: wrap;
+        }
+        .add-section label { font-weight: 600; white-space: nowrap; color: #2c2c2c; }
+        .add-section select { flex: 1; min-width: 300px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        .btn-confirm { background: #c9a961; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: 600; }
+        .btn-confirm:hover { background: #b8944f; }
+        .btn-cancel { background: #666; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+
+        .search-box { position: relative; width: 300px; }
+        .search-box input { width: 100%; padding: 10px 15px 10px 40px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .search-box::before { content: ""; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #c9a961; color: #fff; padding: 14px; text-align: left; font-weight: 600; }
+        .data-table td { padding: 14px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        .data-table tr:hover { background: #fafafa; }
+        .data-table tr.new-customer { background: #e0f2fe !important; animation: flashBlue 2s ease-out; }
+        @keyframes flashBlue { 0% { background: #e0f2fe; } 100% { background: transparent; } }
+
+        .customer-link { color: #c9a961; text-decoration: none; font-weight: 600; }
+        .customer-link:hover { color: #8b0000; text-decoration: underline; }
+
+        .btn-view-orders { background: #17a2b8; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-right: 5px; }
+        .btn-view-orders:hover { background: #138496; }
+        .btn-create-order { background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-right: 5px; }
+        .btn-create-order:hover { background: #218838; }
+        .btn-delete { background: #8b0000; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .btn-delete:hover { background: #6d0000; }
+
+        .rank-select { padding: 6px 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; cursor: pointer; background: #fff; }
+        .rank-select:focus { outline: 2px solid #c9a961; }
+
+        .empty-state { text-align: center; padding: 40px; color: #999; display: none; }
+
+        .logic-notice {
+            background: #e0f2fe; padding: 12px 15px; border-radius: 6px;
+            border-left: 4px solid #0284c7; margin-bottom: 20px;
+            font-size: 14px; color: #0c4a6e;
+        }
+        .logic-notice strong { color: #075985; }
+        .logic-notice a { color: #0c4a6e; font-weight: 600; text-decoration: underline; }
+
+        .auto-calc { color: #fff; font-size: 11px; font-style: italic; font-weight: normal; opacity: 0.9; }
+        .spending-highlight { color: #28a745; font-weight: bold; }
+        .order-count-highlight { color: #c9a961; font-weight: bold; }
+        .new-badge { 
+            background: #17a2b8; color: white; padding: 2px 8px; 
+            border-radius: 10px; font-size: 10px; margin-left: 5px; 
+        }
+
+        .sync-status {
+            position: fixed; bottom: 20px; right: 20px;
+            background: #28a745; color: white; padding: 12px 20px;
+            border-radius: 25px; font-size: 13px; font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none; z-index: 9999;
+            animation: slideIn 0.3s ease-out;
+        }
+        .sync-status.show { display: flex; align-items: center; gap: 8px; }
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 992px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .admin-layout { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h2>Đình Quý</h2>
+                <p>Nhân viên tiếp tân</p>
+            </div>
+            <ul class="admin-menu">
+                <li><a href="dashboard.html"><span class="icon">📊</span> Tổng Quan</a></li>
+                <li><a href="menu-manage.html"><span class="icon">🍽️</span> Quản Lý Thực Đơn</a></li>
+                <li><a href="employee.html"><span class="icon">👔</span> Quản Lý Nhân Sự</a></li>
+                <li><a href="table-manage.html"><span class="icon">🪑</span> Quản Lý Bàn</a></li>
+                <li><a href="order-manage.html"><span class="icon">📋</span> Đặt Món</a></li>
+                <li><a href="customer.html" class="active"><span class="icon">👥</span> Khách Hàng</a></li>
+                <li><a href="inventory.html"><span class="icon">📦</span> Quản Lý Kho</a></li>
+                <li><a href="import.html"><span class="icon">📤</span> Nhập Kho</a></li>
+                <li><a href="export.html"><span class="icon">📤</span> Xuất Kho</a></li>
+                <li><a href="../index.html" class="logout"><span class="icon">🚪</span> Đăng Xuất</a></li>
+            </ul>
+        </aside>
+
+        <main class="admin-content">
+            <div class="admin-header">
+                <h1>Quản Lý Khách Hàng</h1>
+                <div>
+                    <button class="btn-add" id="btn-show-add">+ Thêm khách hàng</button>
+                    <button class="btn-reset" id="btn-reset-data">🔄 Reset dữ liệu</button>
+                </div>
+            </div>
+
+            <div class="logic-notice">
+                💡 <strong>Tự động đồng bộ:</strong> Khi khách hàng đặt món ở <a href="order-manage.html">trang Đặt Món</a>, 
+                tên khách sẽ <strong>tự động xuất hiện</strong> ở đây với số đơn và tổng chi tiêu được tính từ các đơn "Đã thanh toán".
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">👥 Tổng khách hàng</div>
+                    <div class="kpi-value" id="kpi-total">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">⭐ Khách VIP</div>
+                    <div class="kpi-value" id="kpi-vip">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">🧾 Tổng đơn đã thanh toán</div>
+                    <div class="kpi-value" id="kpi-orders">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">💰 Tổng doanh thu</div>
+                    <div class="kpi-value" id="kpi-revenue">0đ</div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h3>Danh sách khách hàng</h3>
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="Tìm kiếm tên, SĐT, email...">
+                    </div>
+                </div>
+
+                <div class="add-section" id="add-section">
+                    <label>Chọn khách hàng:</label>
+                    <select id="select-customer">
+                        <option value="">-- Chọn khách hàng từ danh sách --</option>
+                        <optgroup label="⭐ Khách VIP">
+                            <option value="VIP|Nguyễn Văn A|0901234567|nguyenvana@email.com">Nguyễn Văn A - 0901234567</option>
+                            <option value="VIP|Lê Minh C|0923456789|leminhc@email.com">Lê Minh C - 0923456789</option>
+                            <option value="VIP|Hoàng Văn Em|0945678901|hoangvane@email.com">Hoàng Văn Em - 0945678901</option>
+                        </optgroup>
+                        <optgroup label="💎 Khách Kim Cương">
+                            <option value="Kim cương|Trần Đức F|0967890123|tranducf@email.com">Trần Đức F - 0967890123</option>
+                        </optgroup>
+                        <optgroup label="👤 Khách Thường">
+                            <option value="Thường|Trần Thị B|0912345678|tranthib@email.com">Trần Thị B - 0912345678</option>
+                            <option value="Thường|Phạm Thị D|0934567890|phamthid@email.com">Phạm Thị D - 0934567890</option>
+                            <option value="Thường|Đỗ Minh Quân|0967890124|dominhq@email.com">Đỗ Minh Quân - 0967890124</option>
+                        </optgroup>
+                    </select>
+                    <button class="btn-confirm" id="btn-confirm-add">✓ Thêm vào danh sách</button>
+                    <button class="btn-cancel" id="btn-cancel-add">✕ Hủy</button>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:90px;">Mã KH</th>
+                            <th>Họ tên</th>
+                            <th style="width:120px;">SĐT</th>
+                            <th>Email</th>
+                            <th style="width:90px;">Số đơn <br><small class="auto-calc">(tự động)</small></th>
+                            <th style="width:130px;">Tổng chi tiêu <br><small class="auto-calc">(tự động)</small></th>
+                            <th style="width:130px;">Hạng</th>
+                            <th style="width:220px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customer-tbody"></tbody>
+                </table>
+                <div class="empty-state" id="empty-state">
+                    <p>📭 Không tìm thấy khách hàng nào.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="sync-status" id="sync-status">
+        ✅ Đã đồng bộ khách hàng mới từ trang Đặt Món
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.getElementById('customer-tbody');
+            const btnShowAdd = document.getElementById('btn-show-add');
+            const addSection = document.getElementById('add-section');
+            const btnConfirmAdd = document.getElementById('btn-confirm-add');
+            const btnCancelAdd = document.getElementById('btn-cancel-add');
+            const selectCustomer = document.getElementById('select-customer');
+            const searchInput = document.getElementById('search-input');
+            const emptyState = document.getElementById('empty-state');
+            const btnResetData = document.getElementById('btn-reset-data');
+            const syncStatus = document.getElementById('sync-status');
+
+            const kpiTotal = document.getElementById('kpi-total');
+            const kpiVip = document.getElementById('kpi-vip');
+            const kpiOrders = document.getElementById('kpi-orders');
+            const kpiRevenue = document.getElementById('kpi-revenue');
+
+            let customerCounter = 5;
+
+            // ===== DỮ LIỆU KHÁCH HÀNG MẶC ĐỊNH =====
+            const defaultCustomers = [
+                { id: '#KH001', name: 'Nguyễn Văn A', phone: '0901234567', email: 'nguyenvana@email.com', rank: 'vip' },
+                { id: '#KH002', name: 'Trần Thị B', phone: '0912345678', email: 'tranthib@email.com', rank: 'normal' },
+                { id: '#KH003', name: 'Lê Minh C', phone: '0923456789', email: 'leminhc@email.com', rank: 'vip' },
+                { id: '#KH004', name: 'Phạm Thị D', phone: '0934567890', email: 'phamthid@email.com', rank: 'normal' }
+            ];
+
+            // ===== DỮ LIỆU ĐƠN HÀNG MẪU =====
+            const defaultOrders = [
+                { id: '#DH001', table: 'Bàn 02', customer: 'Nguyễn Văn A', items: [{name:'Bò bít tết Úc',qty:2,price:250000},{name:'Trà đào',qty:2,price:45000}], subtotal: 590000, service: 29500, total: 619500, status: 'paid', payment: 'Tiền mặt', time: '19:30' },
+                { id: '#DH002', table: 'Bàn 05', customer: 'Trần Thị B', items: [{name:'Lẩu Thái',qty:1,price:350000}], subtotal: 350000, service: 17500, total: 367500, status: 'processing', payment: '-', time: '20:15' },
+                { id: '#DH003', table: 'Bàn 08', customer: 'Lê Minh C', items: [{name:'Mỳ Ý',qty:2,price:120000}], subtotal: 240000, service: 12000, total: 252000, status: 'paid', payment: 'Chuyển khoản', time: '20:45' },
+                { id: '#DH004', table: 'Bàn 07', customer: 'Phạm Thị D', items: [{name:'Cá hồi',qty:3,price:180000}], subtotal: 540000, service: 27000, total: 567000, status: 'paid', payment: 'MoMo', time: '21:00' }
+            ];
+
+            // ===== KHỞI TẠO LOCALSTORAGE =====
+            function initStorage() {
+                if (!localStorage.getItem('customers_data')) {
+                    localStorage.setItem('customers_data', JSON.stringify(defaultCustomers));
+                }
+                if (!localStorage.getItem('orders_data')) {
+                    localStorage.setItem('orders_data', JSON.stringify(defaultOrders));
+                }
+            }
+
+            // ===== RESET DỮ LIỆU =====
+            btnResetData.addEventListener('click', function() {
+                if (confirm('⚠️ Reset toàn bộ dữ liệu về mẫu ban đầu?\n\nĐiều này sẽ XÓA tất cả khách hàng mới được tạo tự động từ đơn hàng!')) {
+                    localStorage.setItem('customers_data', JSON.stringify(defaultCustomers));
+                    localStorage.setItem('orders_data', JSON.stringify(defaultOrders));
+                    customerCounter = 5;
+                    alert('✅ Đã reset về dữ liệu mẫu ban đầu!');
+                    loadCustomers();
+                }
+            });
+
+            function formatNumber(num) {
+                return Number(num || 0).toLocaleString('vi-VN');
+            }
+
+            // ===== LOGIC TÍNH TỰ ĐỘNG TỪ ORDERS_DATA =====
+            function calculateCustomerStats(customerName) {
+                const orders = JSON.parse(localStorage.getItem('orders_data') || '[]');
+                let orderCount = 0;
+                let totalSpending = 0;
+
+                orders.forEach(order => {
+                    if (order.customer === customerName && order.status === 'paid') {
+                        orderCount++;
+                        totalSpending += Number(order.total) || 0;
+                    }
+                });
+
+                let autoRank = 'normal';
+                if (totalSpending >= 20000000) autoRank = 'diamond';
+                else if (totalSpending >= 5000000) autoRank = 'vip';
+
+                return { orderCount, totalSpending, autoRank };
+            }
+
+            // ===== TỰ ĐỘNG THÊM KHÁCH MỚI TỪ ĐƠN HÀNG =====
+            function autoAddCustomersFromOrders() {
+                const orders = JSON.parse(localStorage.getItem('orders_data') || '[]');
+                let customers = JSON.parse(localStorage.getItem('customers_data') || '[]');
+                let newCustomersAdded = 0;
+
+                // Lấy danh sách tên khách unique từ orders
+                const customerNames = [...new Set(orders.map(o => o.customer).filter(Boolean))];
+
+                customerNames.forEach(name => {
+                    // Kiểm tra xem khách đã có trong danh sách chưa
+                    const exists = customers.some(c => c.name === name);
+                    if (!exists) {
+                        // Tự động tạo khách mới
+                        const id = '#KH' + String(customerCounter).padStart(3, '0');
+                        customerCounter++;
+                        customers.push({
+                            id: id,
+                            name: name,
+                            phone: '-',
+                            email: '-',
+                            rank: 'normal',
+                            autoCreated: true // Đánh dấu là khách tự động tạo
+                        });
+                        newCustomersAdded++;
+                        console.log(`✅ Tự động thêm khách mới: ${name} (${id})`);
+                    }
+                });
+
+                if (newCustomersAdded > 0) {
+                    localStorage.setItem('customers_data', JSON.stringify(customers));
+                    console.log(`📊 Đã tự động thêm ${newCustomersAdded} khách hàng mới từ đơn hàng`);
+                }
+
+                return newCustomersAdded;
+            }
+
+            // ===== LOAD KHÁCH HÀNG =====
+            function loadCustomers() {
+                initStorage();
+                
+                // BƯỚC 1: Tự động thêm khách mới từ đơn hàng
+                const newCount = autoAddCustomersFromOrders();
+                
+                // BƯỚC 2: Đọc lại customers_data (đã được cập nhật)
+                const customers = JSON.parse(localStorage.getItem('customers_data') || '[]');
+                tbody.innerHTML = '';
+
+                if (customers.length === 0) {
+                    emptyState.style.display = 'block';
+                    updateKPI([], 0, 0, 0);
+                    return;
+                }
+                emptyState.style.display = 'none';
+
+                let totalOrdersAll = 0;
+                let totalRevenueAll = 0;
+                let vipCount = 0;
+
+                customers.forEach(cust => {
+                    const stats = calculateCustomerStats(cust.name);
+                    const displayRank = cust.rank || stats.autoRank;
+
+                    if (!cust.rank || cust.rank !== stats.autoRank) {
+                        cust.rank = stats.autoRank;
+                    }
+
+                    totalOrdersAll += stats.orderCount;
+                    totalRevenueAll += stats.totalSpending;
+                    if (displayRank === 'vip' || displayRank === 'diamond') vipCount++;
+
+                    const tr = document.createElement('tr');
+                    // Highlight khách mới được tạo tự động
+                    if (cust.autoCreated) {
+                        tr.classList.add('new-customer');
+                    }
+                    
+                    tr.innerHTML = `
+                        <td>${cust.id}</td>
+                        <td>
+                            <a href="order-manage.html?customer=${encodeURIComponent(cust.name)}" class="customer-link">${cust.name}</a>
+                            ${cust.autoCreated ? '<span class="new-badge">Mới</span>' : ''}
+                        </td>
+                        <td>${cust.phone || '-'}</td>
+                        <td>${cust.email || '-'}</td>
+                        <td class="order-count-highlight"><strong>${stats.orderCount}</strong> đơn</td>
+                        <td class="spending-highlight">${formatNumber(stats.totalSpending)}đ</td>
+                        <td>
+                            <select class="rank-select" data-id="${cust.id}">
+                                <option value="normal" ${displayRank === 'normal' ? 'selected' : ''}>Thường</option>
+                                <option value="vip" ${displayRank === 'vip' ? 'selected' : ''}>VIP</option>
+                                <option value="diamond" ${displayRank === 'diamond' ? 'selected' : ''}>Kim cương</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn-view-orders" data-customer="${cust.name}">📋 Xem đơn</button>
+                            <button class="btn-create-order" data-customer="${cust.name}" data-phone="${cust.phone || ''}">+ Tạo đơn</button>
+                            <button class="btn-delete" data-id="${cust.id}">🗑 Xóa</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                localStorage.setItem('customers_data', JSON.stringify(customers));
+                updateKPI(customers, vipCount, totalOrdersAll, totalRevenueAll);
+
+                // Hiện thông báo nếu có khách mới
+                if (newCount > 0) {
+                    showSyncNotification(`${newCount} khách hàng mới được thêm tự động`);
+                }
+            }
+
+            function updateKPI(customers, vipCount, totalOrders, totalRevenue) {
+                kpiTotal.textContent = formatNumber(customers.length);
+                kpiVip.textContent = formatNumber(vipCount);
+                kpiOrders.textContent = formatNumber(totalOrders);
+                kpiRevenue.textContent = formatNumber(totalRevenue) + 'đ';
+            }
+
+            function showSyncNotification(message) {
+                syncStatus.textContent = '✅ ' + message;
+                syncStatus.classList.add('show');
+                setTimeout(() => {
+                    syncStatus.classList.remove('show');
+                }, 3000);
+            }
+
+            // ===== THÊM KHÁCH HÀNG THỦ CÔNG =====
+            btnShowAdd.addEventListener('click', function() {
+                addSection.style.display = 'flex';
+                selectCustomer.focus();
+            });
+            btnCancelAdd.addEventListener('click', function() {
+                addSection.style.display = 'none';
+                selectCustomer.value = '';
+            });
+
+            btnConfirmAdd.addEventListener('click', function() {
+                const value = selectCustomer.value;
+                if (!value) { alert('⚠️ Vui lòng chọn khách hàng!'); return; }
+
+                const [rank, name, phone, email] = value.split('|');
+                const rankMap = { 'VIP': 'vip', 'Kim cương': 'diamond', 'Thường': 'normal' };
+
+                const customers = JSON.parse(localStorage.getItem('customers_data') || '[]');
+
+                if (customers.some(c => c.name === name)) {
+                    alert('⚠️ Khách hàng này đã có trong danh sách!');
+                    return;
+                }
+
+                const id = '#KH' + String(customerCounter).padStart(3, '0');
+                customerCounter++;
+
+                customers.push({
+                    id: id,
+                    name: name,
+                    phone: phone,
+                    email: email,
+                    rank: rankMap[rank] || 'normal',
+                    autoCreated: false
+                });
+
+                localStorage.setItem('customers_data', JSON.stringify(customers));
+                selectCustomer.value = '';
+                addSection.style.display = 'none';
+                loadCustomers();
+                applySearch();
+
+                alert(`✅ Đã thêm "${name}" vào danh sách!`);
+            });
+
+            // ===== XỬ LÝ CLICK TABLE =====
+            tbody.addEventListener('click', function(e) {
+                if (e.target.classList.contains('btn-view-orders')) {
+                    window.location.href = `order-manage.html?customer=${encodeURIComponent(e.target.dataset.customer)}`;
+                }
+                if (e.target.classList.contains('btn-create-order')) {
+                    window.location.href = `order-manage.html?new=1&customer=${encodeURIComponent(e.target.dataset.customer)}&phone=${encodeURIComponent(e.target.dataset.phone)}`;
+                }
+                if (e.target.classList.contains('btn-delete')) {
+                    if (confirm(`Bạn có chắc muốn xóa khách hàng ${e.target.dataset.id}?`)) {
+                        let customers = JSON.parse(localStorage.getItem('customers_data') || '[]');
+                        customers = customers.filter(c => c.id !== e.target.dataset.id);
+                        localStorage.setItem('customers_data', JSON.stringify(customers));
+                        loadCustomers();
+                        applySearch();
+                    }
+                }
+            });
+
+            // ===== ĐỔI HẠNG =====
+            tbody.addEventListener('change', function(e) {
+                if (e.target.classList.contains('rank-select')) {
+                    const customers = JSON.parse(localStorage.getItem('customers_data') || '[]');
+                    const cust = customers.find(c => c.id === e.target.dataset.id);
+                    if (cust) {
+                        cust.rank = e.target.value;
+                        localStorage.setItem('customers_data', JSON.stringify(customers));
+                        loadCustomers();
+                    }
+                }
+            });
+
+            // ===== TÌM KIẾM =====
+            searchInput.addEventListener('input', applySearch);
+
+            function applySearch() {
+                const keyword = searchInput.value.toLowerCase();
+                const rows = tbody.querySelectorAll('tr');
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    const name = row.cells[1].textContent.toLowerCase();
+                    const phone = row.cells[2].textContent.toLowerCase();
+                    const email = row.cells[3].textContent.toLowerCase();
+                    const match = name.includes(keyword) || phone.includes(keyword) || email.includes(keyword);
+                    row.style.display = match ? '' : 'none';
+                    if (match) visibleCount++;
+                });
+
+                emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+
+            // ===== LẮNG NGHE THAY ĐỔI TỪ TRANG ĐẶT MÓN =====
+            
+            // 1. BroadcastChannel (realtime giữa các tab)
+            try {
+                const channel = new BroadcastChannel('dinhquy_orders');
+                channel.onmessage = function(event) {
+                    if (event.data && event.data.type === 'orders_updated') {
+                        console.log('📡 Nhận tín hiệu từ trang Đặt Món');
+                        loadCustomers();
+                    }
+                };
+            } catch (e) {}
+
+            // 2. Storage event
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'orders_data') {
+                    console.log(' orders_data changed, reloading...');
+                    loadCustomers();
+                }
+            });
+
+            // 3. Window focus
+            window.addEventListener('focus', function() {
+                loadCustomers();
+            });
+
+            // Load lần đầu
+            loadCustomers();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Nhập kho - Đình Quý</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+        .admin-sidebar { background: #2c2c2c; color: #fff; padding: 25px 0; }
+        .admin-sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid #444; margin-bottom: 20px; }
+        .admin-sidebar-header h2 { color: #c9a961; font-family: Georgia, serif; font-size: 24px; margin-bottom: 5px; }
+        .admin-sidebar-header p { color: #999; font-size: 13px; }
+        .admin-menu { list-style: none; }
+        .admin-menu li a {
+            display: block; padding: 14px 20px; color: #ddd; text-decoration: none;
+            font-size: 15px; border-left: 4px solid transparent; transition: all 0.2s;
+        }
+        .admin-menu li a:hover { background: #3a3a3a; border-left-color: #c9a961; color: #fff; }
+        .admin-menu li a.active { background: #c9a961; color: #fff; border-left-color: #c9a961; }
+        .admin-content { background: #f5f5f5; padding: 30px; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .admin-header h1 { color: #2c2c2c; font-size: 28px; margin: 0; }
+        .btn-back {
+            background: transparent; color: #c9a961; border: 2px solid #c9a961;
+            padding: 10px 20px; border-radius: 6px; cursor: pointer;
+            font-weight: 600; font-size: 14px; text-decoration: none;
+            display: inline-block;
+        }
+        .btn-back:hover { background: #c9a961; color: white; }
+
+        /* Form Card */
+        .form-card {
+            background: #fff; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 30px;
+            max-width: 800px; margin-bottom: 25px;
+        }
+        .form-card h3 {
+            color: #8b0000; font-size: 20px; margin-bottom: 25px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; margin-bottom: 8px; font-weight: 600; color: #2c2c2c;
+        }
+        .form-group label .required { color: #dc3545; }
+        .form-control {
+            width: 100%; padding: 12px 15px;
+            border: 2px solid #e0d5c5; border-radius: 6px;
+            font-size: 14px; transition: border-color 0.3s;
+        }
+        .form-control:focus { outline: none; border-color: #c9a961; }
+        .form-control[readonly] { background: #f5f5f5; cursor: not-allowed; }
+        .form-control.error { border-color: #dc3545; background: #fff5f5; }
+        .error-message { color: #dc3545; font-size: 12px; margin-top: 5px; display: none; }
+        .error-message.show { display: block; }
+
+        .btn-submit {
+            background: #c9a961; color: white; border: none;
+            padding: 14px 30px; border-radius: 6px; cursor: pointer;
+            font-weight: 600; font-size: 15px; flex: 1;
+        }
+        .btn-submit:hover { background: #b8944f; }
+        .btn-reset {
+            background: transparent; color: #666; border: 2px solid #ddd;
+            padding: 14px 20px; border-radius: 6px; cursor: pointer;
+            font-weight: 600; font-size: 15px;
+        }
+        .btn-reset:hover { background: #f5f5f5; }
+
+        /* Table */
+        .content-card {
+            background: #fff; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 25px;
+        }
+        .content-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .content-card-header h3 { margin: 0; color: #2c2c2c; font-size: 20px; }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            background: #c9a961; color: #fff; padding: 14px;
+            text-align: left; font-weight: 600;
+        }
+        .data-table td { padding: 14px; border-bottom: 1px solid #eee; }
+        .data-table tr:hover { background: #fafafa; }
+
+        .success-notice {
+            background: #d4edda; padding: 15px; border-radius: 6px;
+            border-left: 4px solid #28a745; margin-bottom: 20px;
+            color: #155724; display: none;
+        }
+        .success-notice.show { display: block; }
+
+        @media (max-width: 768px) {
+            .admin-layout { grid-template-columns: 1fr; }
+            .form-row, .form-row.three-col { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-sidebar-header">
+                <h2>Đình Quý</h2>
+                <p>Nhân viên kho</p>
+            </div>
+            <ul class="admin-menu">
+                <li><a href="dashboard.html">📊 Tổng Quan</a></li>
+                <li><a href="menu-manage.html">🍽️ Quản Lý Thực Đơn</a></li>
+                <li><a href="employee.html">👔 Quản Lý Nhân Sự</a></li>
+                <li><a href="table-manage.html">🪑 Quản Lý Bàn</a></li>
+                <li><a href="order-manage.html">📋 Đặt Món</a></li>
+                <li><a href="customer.html">👥 Khách Hàng</a></li>
+                <li><a href="inventory.html">📦 Quản Lý Kho</a></li>
+                <li><a href="import.html" class="active">📥 Nhập Kho</a></li>
+                <li><a href="export.html">📤 Xuất Kho</a></li>
+                <li><a href="../index.html" style="margin-top:30px; color:#ff6b6b;">🚪 Đăng Xuất</a></li>
+            </ul>
+        </aside>
+
+        <main class="admin-content">
+            <div class="admin-header">
+                <h1>Nhập Kho Nguyên Liệu</h1>
+                <a href="inventory.html" class="btn-back">← Quay lại kho</a>
+            </div>
+
+            <!-- Thông báo thành công -->
+            <div class="success-notice" id="success-notice">
+                ✅ <strong>Phiếu nhập kho đã được lưu!</strong> Số lượng tồn kho đã được cập nhật tự động.
+                <a href="inventory.html" style="color:#155724; font-weight:bold; margin-left:10px;">Xem kho →</a>
+            </div>
+
+            <div class="form-card">
+                <h3>📥 Phiếu nhập kho mới</h3>
+                <form id="import-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Mã phiếu nhập <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="import-id" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày nhập <span class="required">*</span></label>
+                            <input type="date" class="form-control" id="import-date" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nhà cung cấp <span class="required">*</span></label>
+                        <select class="form-control" id="import-supplier" required>
+                            <option value="">-- Chọn nhà cung cấp --</option>
+                            <option value="Cty TNHH Thực phẩm ABC">Công ty TNHH Thực phẩm ABC</option>
+                            <option value="Hải sản tươi sống XYZ">Hải sản tươi sống XYZ</option>
+                            <option value="Nông trại sạch GreenFarm">Nông trại sạch GreenFarm</option>
+                            <option value="Nhà cung cấp sữa Vinamilk">Nhà cung cấp sữa Vinamilk</option>
+                            <option value="Cty gia vị Hương Việt">Cty gia vị Hương Việt</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nguyên liệu <span class="required">*</span></label>
+                        <select class="form-control" id="import-item" required>
+                            <option value="">-- Chọn nguyên liệu --</option>
+                            <!-- Được load từ localStorage -->
+                        </select>
+                        <div class="error-message" id="item-error">⚠️ Vui lòng chọn nguyên liệu</div>
+                    </div>
+
+                    <div class="form-row three-col">
+                        <div class="form-group">
+                            <label>Số lượng <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="import-qty" min="1" required placeholder="0">
+                            <div class="error-message" id="qty-error">⚠️ Số lượng phải lớn hơn 0</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị</label>
+                            <input type="text" class="form-control" id="import-unit" readonly value="kg">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn giá (đ/kg) <span class="required">*</span></label>
+                            <input type="number" class="form-control" id="import-price" min="0" required placeholder="0">
+                            <div class="error-message" id="price-error">⚠️ Đơn giá phải lớn hơn 0</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hạn sử dụng <span class="required">*</span></label>
+                        <input type="date" class="form-control" id="import-expiry" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea class="form-control" id="import-note" rows="3" placeholder="Ghi chú về chất lượng, điều kiện bảo quản..."></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-top: 20px;">
+                        <button type="submit" class="btn-submit">💾 Lưu phiếu nhập</button>
+                        <button type="reset" class="btn-reset">🔄 Làm mới</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h3>Lịch sử nhập kho gần đây</h3>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Mã phiếu</th>
+                            <th>Ngày nhập</th>
+                            <th>Nguyên liệu</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Người nhập</th>
+                        </tr>
+                    </thead>
+                    <tbody id="import-tbody">
+                        <!-- Load từ localStorage -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('import-form');
+            const importId = document.getElementById('import-id');
+            const importDate = document.getElementById('import-date');
+            const importSupplier = document.getElementById('import-supplier');
+            const importItem = document.getElementById('import-item');
+            const importQty = document.getElementById('import-qty');
+            const importUnit = document.getElementById('import-unit');
+            const importPrice = document.getElementById('import-price');
+            const importExpiry = document.getElementById('import-expiry');
+            const importNote = document.getElementById('import-note');
+            const importTbody = document.getElementById('import-tbody');
+            const successNotice = document.getElementById('success-notice');
+
+            // ===== Khởi tạo localStorage nếu chưa có =====
+            function initStorage() {
+                if (!localStorage.getItem('inventory_data')) {
+                    const defaultInventory = [
+                        { id: '#NL001', name: 'Thịt bò Úc', category: 'Thịt', stock: 25, unit: 'kg', status: 'instock', expiry: '10/10/2026' },
+                        { id: '#NL002', name: 'Tôm sú tươi', category: 'Hải sản', stock: 5, unit: 'kg', status: 'lowstock', expiry: '05/10/2026' },
+                        { id: '#NL003', name: 'Cá hồi Na Uy', category: 'Hải sản', stock: 0, unit: 'kg', status: 'outofstock', expiry: '-' },
+                        { id: '#NL004', name: 'Rau xà lách', category: 'Rau củ', stock: 30, unit: 'kg', status: 'instock', expiry: '06/10/2026' },
+                        { id: '#NL005', name: 'Phô mai Mozzarella', category: 'Đồ khô', stock: 12, unit: 'kg', status: 'instock', expiry: '15/11/2026' },
+                        { id: '#NL006', name: 'Gạo nếp', category: 'Lương thực', stock: 50, unit: 'kg', status: 'instock', expiry: '30/12/2026' },
+                        { id: '#NL007', name: 'Dầu ăn', category: 'Gia vị', stock: 20, unit: 'lít', status: 'instock', expiry: '20/11/2026' },
+                        { id: '#NL008', name: 'Trứng gà', category: 'Thực phẩm tươi', stock: 8, unit: 'kg', status: 'lowstock', expiry: '08/10/2026' }
+                    ];
+                    localStorage.setItem('inventory_data', JSON.stringify(defaultInventory));
+                }
+                if (!localStorage.getItem('import_history')) {
+                    localStorage.setItem('import_history', JSON.stringify([
+                        { id: '#PN001', date: '03/10/2026', item: 'Thịt bò Úc', qty: 50, price: 25000000, supplier: 'Cty ABC', user: 'Hoàng Văn E' },
+                        { id: '#PN002', date: '02/10/2026', item: 'Tôm sú tươi', qty: 30, price: 18000000, supplier: 'Hải sản XYZ', user: 'Hoàng Văn E' }
+                    ]));
+                }
+            }
+
+            // ===== Load dropdown nguyên liệu từ localStorage =====
+            function loadItemDropdown() {
+                const data = JSON.parse(localStorage.getItem('inventory_data'));
+                importItem.innerHTML = '<option value="">-- Chọn nguyên liệu --</option>';
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = `${item.name} (tồn: ${item.stock} ${item.unit})`;
+                    option.dataset.name = item.name;
+                    option.dataset.unit = item.unit;
+                    importItem.appendChild(option);
+                });
+            }
+
+            // ===== Load lịch sử nhập kho =====
+            function loadImportHistory() {
+                const history = JSON.parse(localStorage.getItem('import_history'));
+                importTbody.innerHTML = '';
+                history.forEach(record => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${record.id}</td>
+                        <td>${record.date}</td>
+                        <td>${record.item}</td>
+                        <td>${record.qty}</td>
+                        <td>${record.price.toLocaleString('vi-VN')}đ</td>
+                        <td>${record.supplier}</td>
+                        <td>${record.user}</td>
+                    `;
+                    importTbody.appendChild(tr);
+                });
+            }
+
+            // ===== Set ngày mặc định = hôm nay =====
+            function setDefaultDate() {
+                const today = new Date().toISOString().split('T')[0];
+                importDate.value = today;
+            }
+
+            // ===== Generate mã phiếu tự động =====
+            function generateImportId() {
+                const history = JSON.parse(localStorage.getItem('import_history') || '[]');
+                const nextNum = history.length + 1;
+                const today = new Date();
+                const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+                return `PN${dateStr}-${String(nextNum).padStart(3, '0')}`;
+            }
+
+            // ===== Cập nhật đơn vị khi chọn nguyên liệu =====
+            importItem.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                if (selected.dataset.unit) {
+                    importUnit.value = selected.dataset.unit;
+                }
+            });
+
+            // ===== Validate form =====
+            function validateForm() {
+                let isValid = true;
+
+                // Reset errors
+                document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+                document.querySelectorAll('.form-control').forEach(el => el.classList.remove('error'));
+
+                if (!importItem.value) {
+                    document.getElementById('item-error').classList.add('show');
+                    importItem.classList.add('error');
+                    isValid = false;
+                }
+                if (!importQty.value || parseInt(importQty.value) <= 0) {
+                    document.getElementById('qty-error').classList.add('show');
+                    importQty.classList.add('error');
+                    isValid = false;
+                }
+                if (!importPrice.value || parseInt(importPrice.value) <= 0) {
+                    document.getElementById('price-error').classList.add('show');
+                    importPrice.classList.add('error');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            // ===== Submit form =====
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                if (!validateForm()) return;
+
+                const itemId = importItem.value;
+                const itemName = importItem.options[importItem.selectedIndex].dataset.name;
+                const qty = parseInt(importQty.value);
+                const price = parseInt(importPrice.value);
+                const total = qty * price;
+                const supplier = importSupplier.value;
+                const date = importDate.value;
+                const expiry = importExpiry.value;
+
+                // Format ngày
+                const dateFormatted = date.split('-').reverse().join('/');
+                const expiryFormatted = expiry ? expiry.split('-').reverse().join('/') : '-';
+
+                // 1. Lưu phiếu nhập vào history
+                const history = JSON.parse(localStorage.getItem('import_history'));
+                const newRecord = {
+                    id: importId.value,
+                    date: dateFormatted,
+                    item: itemName,
+                    qty: qty,
+                    price: total,
+                    supplier: supplier,
+                    user: 'Nhân viên kho'
+                };
+                history.unshift(newRecord); // Thêm vào đầu
+                localStorage.setItem('import_history', JSON.stringify(history));
+
+                // 2. CẬP NHẬT TỒN KHO (cộng số lượng)
+                const inventory = JSON.parse(localStorage.getItem('inventory_data'));
+                const item = inventory.find(i => i.id === itemId);
+                if (item) {
+                    item.stock += qty;
+                    item.expiry = expiryFormatted;
+                    // Tự động đổi trạng thái
+                    if (item.stock > 10) item.status = 'instock';
+                    else if (item.stock > 0) item.status = 'lowstock';
+                    else item.status = 'outofstock';
+                    localStorage.setItem('inventory_data', JSON.stringify(inventory));
+                }
+
+                // 3. Hiển thị thông báo thành công
+                successNotice.classList.add('show');
+                setTimeout(() => { successNotice.classList.remove('show'); }, 5000);
+
+                // 4. Reset form và reload
+                form.reset();
+                importId.value = generateImportId();
+                setDefaultDate();
+                loadItemDropdown();
+                loadImportHistory();
+
+                alert(`✅ Đã nhập kho thành công!\n\n📋 Mã phiếu: ${importId.value}\n📦 Nguyên liệu: ${itemName}\n Số lượng: +${qty} ${importUnit.value}\n💰 Thành tiền: ${total.toLocaleString('vi-VN')}đ\n\nSố lượng tồn kho đã được cập nhật tự động.`);
+            });
+
+            // ===== Reset form =====
+            form.addEventListener('reset', function() {
+                setTimeout(() => {
+                    importId.value = generateImportId();
+                    setDefaultDate();
+                    document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+                    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('error'));
+                }, 10);
+            });
+
+            // Khởi tạo
+            initStorage();
+            importId.value = generateImportId();
+            setDefaultDate();
+            loadItemDropdown();
+            loadImportHistory();
+        });
+    </script>
+</body>
+</html>
